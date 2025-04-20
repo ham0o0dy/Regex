@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Regex Tester</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <button id="titleBtn"><span>REG</span>ular <span>EX</span>pression </button>
+    <div class="header-buttons">
+      <div class="dropdown">
+        <button class="social-btn" title="Info">ℹ️</button>
+        <div class="dropdown-content">
+          <div class="dropdown-item" onclick="window.open('https://en.wikipedia.org/wiki/Regular_expression', '_blank')">Wikipedia</div>
+          <div class="dropdown-item" onclick="showFlavorInfo()">Flavor Info</div>
+          <div class="dropdown-item" onclick="showAbout()">About</div>
+        </div>
+      </div>
+      <div class="dropdown">
+        <button class="social-btn" title="Donate">❤️</button>
+        <div class="dropdown-content">
+          <div class="dropdown-item" onclick="window.open('https://paypal.me/example', '_blank')">PayPal</div>
+          <div class="dropdown-item" onclick="window.open('https://buymeacoffee.com/example', '_blank')">Buy Me Coffee</div>
+        </div>
+      </div>
+      <div class="dropdown">
+        <button class="social-btn" title="Share">↗️</button>
+        <div class="dropdown-content">
+          <div class="dropdown-item" onclick="shareToTwitter()">Twitter</div>
+          <div class="dropdown-item" onclick="shareToTelegram()">Telegram</div>
+          <div class="dropdown-item" onclick="copyUrl()">Copy Link</div>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  <div id="mainContainer">
+    <div id="sidebar">
+      <h3>REGEX FLAVOR</h3>
+      <div class="flavor-buttons" id="flavorButtons">
+        <button class="flavor-btn active" data-flavor="pcre2">PCRE2 (PHP>=7.3)</button>
+        <button class="flavor-btn" data-flavor="pcre">PCRE (PHP<7.3)</button>
+        <button class="flavor-btn" data-flavor="ecmascript">ECMAScript</button>
+        <button class="flavor-btn" data-flavor="python">Python</button>
+        <button class="flavor-btn" data-flavor="golang">Golang</button>
+        <button class="flavor-btn" data-flavor="java8">Java 8</button>
+        <button class="flavor-btn" data-flavor="dotnet">.NET 7.0</button>
+        <button class="flavor-btn" data-flavor="rust">Rust</button>
+      </div>
+      
+      <h3>FUNCTION</h3>
+      <div class="btn-group" id="functionButtons">
+        <button class="btn active" data-function="match">Match</button>
+        <button class="btn" data-function="replace">Replace</button>
+        <button class="btn" data-function="split">Split</button>
+        <button class="btn" data-function="test">Test</button>
+      </div>
+      
+      <h3>TOOLS</h3>
+      <button class="btn" id="codeGenBtn">Code Generator</button>
+      
+      <h3>QUICK REFERENCE</h3>
+      <div class="quick-ref">
+        <p><strong>.</strong> Any character</p>
+        <p><strong>\d</strong> Digit</p>
+        <p><strong>\w</strong> Word character</p>
+        <p><strong>\s</strong> Whitespace</p>
+        <p><strong>[abc]</strong> Any of a, b, or c</p>
+        <p><strong>[^abc]</strong> Not a, b, or c</p>
+        <p><strong>^</strong> Start of string</p>
+        <p><strong>$</strong> End of string</p>
+        <p><strong>*</strong> 0 or more</p>
+        <p><strong>+</strong> 1 or more</p>
+        <p><strong>?</strong> 0 or 1</p>
+        <p><strong>{n}</strong> Exactly n</p>
+        <p><strong>{n,}</strong> n or more</p>
+        <p><strong>{n,m}</strong> Between n and m</p>
+      </div>
+    </div>
+    
+    <div id="content">
+      <div id="input-section">
+        <div id="regex-section">
+          <div id="regex-header">
+            <div class="panel-title">REGULAR EXPRESSION</div>
+            <div class="panel-controls">
+              <button title="Clear" onclick="clearRegex()">Clear</button>
+            </div>
+          </div>
+          <div id="regex-container">
+            <textarea id="regexPattern" placeholder="Enter your regular expression (e.g. /[a-z]+/g)"></textarea>
+            <div id="flags-container">
+            </div>
+          </div>
+        </div>
+        
+        <div id="test-string-section">
+          <div id="test-string-header">
+            <div class="panel-title">TEST STRING</div>
+            <div class="panel-controls">
+              <button title="Clear" onclick="clearTestString()">Clear</button>
+            </div>
+          </div>
+          <div id="test-string-container">
+            <textarea id="testString" placeholder="Enter text to test the regular expression against"></textarea>
+            <div id="positionInfo">0:0</div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="results-section">
+        <div id="explanation-panel" class="panel">
+          <div class="panel-header">
+            <div class="panel-title">EXPLANATION</div>
+          </div>
+          <div class="panel-content">
+            <div class="section-box">
+              <div id="explanation">Enter a regular expression to see explanation...</div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="matches-panel" class="panel">
+          <div class="panel-header">
+            <div class="panel-title">MATCH INFORMATION</div>
+            <div class="panel-controls">
+              <button title="Copy matches" onclick="copyMatches()">Copy</button>
+            </div>
+          </div>
+          <div class="panel-content">
+            <div class="section-box">
+              <div id="matchInfo">
+                <div class="match-box">
+                  <div class="match-header">No matches yet</div>
+                  <div class="match-content">Test your regular expression to see matches here</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Code Generator Modal -->
+  <div id="codeGeneratorModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeModalBtn">&times;</button>
+      <h3 class="modal-title">Code Generator</h3>
+      <select id="codeGenLangs">
+        <option value="js">JavaScript</option>
+        <option value="py">Python</option>
+        <option value="php">PHP</option>
+        <option value="java">Java</option>
+        <option value="csharp">C#</option>
+        <option value="go">Golang</option>
+        <option value="ruby">Ruby</option>
+        <option value="rust">Rust</option>
+      </select>
+      <button class="btn" id="generateCodeBtn" style="margin-bottom: 15px;">Generate Code</button>
+      <div class="code-output" id="codeOutput"></div>
+      <button class="btn" onclick="copyGeneratedCode()" style="margin-top: 10px;">Copy Code</button>
+    </div>
+  </div>
+
+  <!-- Flavor Info Modal -->
+  <div id="flavorInfoModal" class="modal">
+    <div class="modal-content" style="width: 800px;">
+      <button class="modal-close" id="closeFlavorModalBtn">&times;</button>
+      <h3 class="modal-title">Regex Flavor Information</h3>
+      <table class="flavor-table">
+        <thead>
+          <tr>
+            <th>Language</th>
+            <th>Support</th>
+            <th>Comments</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>JavaScript</td>
+            <td>Full</td>
+            <td>Uses your browsers native implementation</td>
+          </tr>
+          <tr>
+            <td>PHP</td>
+            <td>Full</td>
+            <td>Recent versions of PHP use PCRE2</td>
+          </tr>
+          <tr>
+            <td>Python</td>
+            <td>Emulated</td>
+            <td>Emulated through PCRE but provides a good baseline</td>
+          </tr>
+          <tr>
+            <td>Java</td>
+            <td>Full</td>
+            <td>Newer versions have greater support for variable width lookbehinds</td>
+          </tr>
+          <tr>
+            <td>.NET</td>
+            <td>Full</td>
+            <td>Uses .NET 7</td>
+          </tr>
+          <tr>
+            <td>Golang</td>
+            <td>Full</td>
+            <td>Uses googles RE2 engine</td>
+          </tr>
+          <tr>
+            <td>Rust</td>
+            <td>Full</td>
+            <td>Uses the Regex Crate</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- About Modal -->
+  <div id="aboutModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeAboutModalBtn">&times;</button>
+      <h3 class="modal-title">About Regex Tester</h3>
+      <div style="margin-bottom: 15px;">
+        <p>REGular EXpression</p>
+        <p>Version 1.0</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
